@@ -7,7 +7,9 @@ import { Link } from "react-router-dom";
 const Beers = () => {
 
     const [beers, setBeers] = useState([])
-    const [searchText, setSearchText] =useState('');
+   // const [searchText, setSearchText] =useState(''); 
+
+    const [query, setQuery] = useState('')
 
     
 
@@ -19,15 +21,23 @@ const Beers = () => {
             })
         }, [])
 
-        const refreshFilteredBeers = (searchText) => {
-            if (searchText === "") {
+    useEffect(() => {
+        axios.get(`https://ih-beers-api2.herokuapp.com/beers/search?q=${query}`)
+            .then(res => {
+                setBeers(res.data)
+                console.log("res.data", res.data)
+            })
+        }, [query])
+
+    /*    const refreshFilteredBeers = (query) => {
+            if (query === "") {
                 setBeers(beers)
             }
             else {
                 const filteredBeers = beers.filter(beer => beer.name.toUpperCase().startsWith(searchText.toUpperCase()))
                 setBeers(filteredBeers)
             }
-        }
+        } */
 
     /*    useEffect(() => {
             axios.get(`https://ih-beers-api2.herokuapp.com/beers`)
@@ -37,18 +47,18 @@ const Beers = () => {
             }, [searchText]) */
 
     const handleChange = (e) => {
-        setSearchText(e.target.value)
-        refreshFilteredBeers(e.target.value)
+        setQuery(e.target.value)
+    //    refreshFilteredBeers(e.target.value)
 
         console.log(e.target.value)
-        console.log('filtered', beers)
+
     } 
   return (
     <div>
         <Header />
         <div>
         <div>
-            <input value={searchText} onChange={handleChange} />
+            <input name="q" onChange={handleChange} />
         </div>
             {beers.map(beer => (
                 <div key={beer._id}>
