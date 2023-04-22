@@ -1,13 +1,12 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
 import Header from '../components/Header'
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const Beers = () => {
 
     const [beers, setBeers] = useState([])
-    const [filteredBeers, setFilteredBeers] = useState([])
     const [searchText, setSearchText] =useState('');
 
     
@@ -16,33 +15,33 @@ const Beers = () => {
         axios.get(`https://ih-beers-api2.herokuapp.com/beers`)
             .then(res => {
                 setBeers(res.data)
-                setFilteredBeers(res.data)
                 console.log("res.data", res.data)
             })
         }, [])
 
-    useEffect(() => {
-        axios.get(`https://ih-beers-api2.herokuapp.com/beers`)
-            .then(res => res.json())
-            .then(searchText => setFilteredBeers(searchText))
-    }, [searchText])
+        const refreshFilteredBeers = (searchText) => {
+            if (searchText === "") {
+                setBeers(beers)
+            }
+            else {
+                const filteredBeers = beers.filter(beer => beer.name.toUpperCase().startsWith(searchText.toUpperCase()))
+                setBeers(filteredBeers)
+            }
+        }
 
-    const refreshFilteredBeers = (searchText) => {
-        if (searchText === "") {
-            setFilteredBeers(beers)
-        }
-        else {
-            const foundBeers = beers.filter(beer => beer.name.toUpperCase().startsWith(searchText.toUpperCase()))
-            setFilteredBeers(foundBeers)
-        }
-    }
+    /*    useEffect(() => {
+            axios.get(`https://ih-beers-api2.herokuapp.com/beers`)
+                .then(res => {
+                    setBeers(res.data)
+                })
+            }, [searchText]) */
 
     const handleChange = (e) => {
         setSearchText(e.target.value)
         refreshFilteredBeers(e.target.value)
-        setBeers(filteredBeers)
+
         console.log(e.target.value)
-        console.log('filtered', filteredBeers)
+        console.log('filtered', beers)
     } 
   return (
     <div>
